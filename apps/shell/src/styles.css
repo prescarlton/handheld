@@ -1,0 +1,194 @@
+/*
+ * Look: the board itself. Solder-mask green ground, silkscreen-white type,
+ * and gold (ENIG pad) as the one accent, reserved for focus.
+ * Bundle a font into /public/fonts once you pick one; the stack below is the fallback.
+ */
+:root {
+  --mask: #173a30;        /* background */
+  --mask-deep: #10291f;   /* status bar, pressed rows */
+  --trace: #4e7a69;       /* dividers, secondary text */
+  --silk: #edefe6;        /* primary text */
+  --pad: #d4ad5f;         /* focus — the only accent */
+  --warn: #e5866b;        /* low battery, offline */
+
+  --font: "IBM Plex Sans", "Inter", system-ui, sans-serif;
+  /* Scale from the screen, so the same layout works on 320px and 720px panels. */
+  --unit: clamp(12px, 3.2vmin, 22px);
+  --step--1: calc(var(--unit) * 0.8);
+  --step-0: var(--unit);
+  --step-1: calc(var(--unit) * 1.25);
+  --step-2: calc(var(--unit) * 1.8);
+  --gap: calc(var(--unit) * 0.75);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  background: var(--mask);
+  color: var(--silk);
+  font-family: var(--font);
+  font-size: var(--step-0);
+  line-height: 1.4;
+  overflow: hidden;
+  cursor: none; /* no pointer on the device */
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+#device {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  height: 100%;
+}
+
+/* ---------- status bar ---------- */
+#status {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: calc(var(--gap) * 0.5) var(--gap);
+  background: var(--mask-deep);
+  font-size: var(--step--1);
+  font-variant-numeric: tabular-nums;
+}
+.status-right {
+  display: flex;
+  gap: var(--gap);
+  color: var(--trace);
+}
+.status-battery {
+  color: var(--silk);
+}
+.status-battery.is-low,
+#status.is-offline .status-battery {
+  color: var(--warn);
+}
+
+/* ---------- screens ---------- */
+#app {
+  overflow-y: auto;
+  padding: var(--gap);
+}
+
+.screen-title {
+  margin: 0 0 var(--gap);
+  font-size: var(--step-2);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+}
+.screen-copy {
+  margin: 0 0 var(--gap);
+  max-width: 36ch;
+}
+.screen-note {
+  margin: var(--gap) 0 0;
+  min-height: 1.4em;
+  font-size: var(--step--1);
+  color: var(--trace);
+}
+
+/* ---------- launcher ---------- */
+.app-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--trace);
+}
+.app-row {
+  display: grid;
+  width: 100%;
+  padding: var(--gap) var(--gap) var(--gap) calc(var(--gap) * 1.5);
+  border: 0;
+  border-bottom: 1px solid var(--trace);
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  position: relative;
+}
+.app-name {
+  font-size: var(--step-1);
+  font-weight: 600;
+}
+.app-blurb {
+  font-size: var(--step--1);
+  color: var(--trace);
+}
+
+/* ---------- settings ---------- */
+.facts {
+  display: grid;
+  gap: calc(var(--gap) * 0.5);
+  margin: 0 0 var(--gap);
+}
+.facts div {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--gap);
+}
+.facts dt {
+  color: var(--trace);
+}
+.facts dd {
+  margin: 0;
+  text-align: right;
+}
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--gap) * 0.5);
+}
+.action {
+  padding: calc(var(--gap) * 0.6) var(--gap);
+  border: 1px solid var(--trace);
+  border-radius: 3px;
+  background: none;
+  color: inherit;
+  font: inherit;
+}
+.action:disabled {
+  opacity: 0.45;
+}
+
+/* ---------- focus: the one loud thing ---------- */
+:focus {
+  outline: none;
+}
+.action:focus-visible,
+.action:focus {
+  border-color: var(--pad);
+  box-shadow: inset 0 0 0 1px var(--pad);
+  color: var(--pad);
+}
+.app-row:focus {
+  background: var(--mask-deep);
+}
+.app-row::before {
+  content: "";
+  position: absolute;
+  inset: 25% auto 25% 0;
+  width: calc(var(--gap) * 0.5);
+  background: var(--pad);
+  transform: scaleY(0);
+  transition: transform 120ms ease-out;
+}
+.app-row:focus::before {
+  transform: scaleY(1);
+}
+.app-row:focus .app-name {
+  color: var(--pad);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+  }
+}

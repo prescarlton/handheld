@@ -1,0 +1,15 @@
+[Unit]
+Description=Handheld system daemon (battery, network, power API + shell host)
+After=network.target bluetooth.target NetworkManager.service
+
+[Service]
+Type=simple
+User=handheld
+WorkingDirectory=/opt/handheld
+EnvironmentFile=-/etc/handheld/handheld.env
+ExecStart=/usr/bin/node /opt/handheld/services/daemon/dist/daemon.js
+Restart=always
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target

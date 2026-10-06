@@ -1,0 +1,12 @@
+// Let the handheld user power off / reboot without a password.
+polkit.addRule(function (action, subject) {
+  if (subject.user !== "handheld") return;
+  if (
+    action.id === "org.freedesktop.login1.power-off" ||
+    action.id === "org.freedesktop.login1.power-off-multiple-sessions" ||
+    action.id === "org.freedesktop.login1.reboot" ||
+    action.id === "org.freedesktop.login1.reboot-multiple-sessions"
+  ) {
+    return polkit.Result.YES;
+  }
+});

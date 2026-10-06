@@ -1,0 +1,22 @@
+[Unit]
+Description=Handheld UI (cog / WPE WebKit kiosk)
+After=handheld-daemon.service systemd-user-sessions.service
+Wants=handheld-daemon.service
+Conflicts=getty@tty1.service
+
+[Service]
+Type=simple
+User=handheld
+SupplementaryGroups=video render input audio
+EnvironmentFile=-/etc/handheld/handheld.env
+# Wait for the daemon so the first paint isn't an error page.
+ExecStartPre=/bin/sh -c 'for i in $(seq 1 50); do curl -sf http://127.0.0.1:7777/api/state >/dev/null && exit 0; sleep 0.2; done; exit 0'
+ExecStart=/usr/bin/cog --platform=${COG_PLATFORM} http://127.0.0.1:7777/
+Restart=always
+RestartSec=2
+TTYPath=/dev/tty1
+StandardInput=tty
+StandardOutput=journal
+
+[Install]
+WantedBy=multi-user.target
