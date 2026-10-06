@@ -1,5 +1,10 @@
 import type { Direction } from "./buttons.ts";
 
+/**
+ * D-pad navigation works on real DOM focus, independent of Preact.
+ * Mark anything selectable with `data-focusable`. Buttons and links are focusable
+ * already; give other elements `tabIndex={0}` as well.
+ */
 const FOCUSABLE = "[data-focusable]:not([disabled])";
 
 export function focusables(root: HTMLElement): HTMLElement[] {
@@ -9,11 +14,11 @@ export function focusables(root: HTMLElement): HTMLElement[] {
 }
 
 export function focusFirst(root: HTMLElement): void {
-  const preferred = root.querySelector<HTMLElement>(`[data-autofocus]:not([disabled])`);
+  const preferred = root.querySelector<HTMLElement>("[data-autofocus]:not([disabled])");
   (preferred ?? focusables(root)[0])?.focus();
 }
 
-/** Spatial navigation: move to the nearest focusable element in the pressed direction. */
+/** Move to the nearest focusable element in the pressed direction. */
 export function moveFocus(root: HTMLElement, direction: Direction): boolean {
   const items = focusables(root);
   const current = document.activeElement as HTMLElement | null;
@@ -34,7 +39,7 @@ export function moveFocus(root: HTMLElement, direction: Direction): boolean {
 
     const primary =
       direction === "up" ? -dy : direction === "down" ? dy : direction === "left" ? -dx : dx;
-    if (primary <= 1) continue; // not in that direction
+    if (primary <= 1) continue;
     const secondary = direction === "up" || direction === "down" ? Math.abs(dx) : Math.abs(dy);
 
     // Weight sideways drift so straight lines win over diagonals.

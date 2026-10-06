@@ -5,9 +5,10 @@ Software for the custom handheld: a TypeScript shell rendered full-screen by
 talks to the hardware. Apps — Spotify first — are modules inside the shell.
 
 ```
-apps/shell/          UI that runs in cog. Vanilla TS + Vite, no framework.
-  src/core/          input mapping, spatial focus, app host, daemon bridge, status bar
+apps/shell/          UI that runs in cog. Preact + signals, Tailwind 4, Vite.
+  src/core/          input mapping, d-pad focus, navigation, daemon bridge, status bar
   src/apps/          one folder per app (launcher, spotify, settings)
+  src/ui/            shared components (Screen, Action)
 services/daemon/     Node service: battery / Wi-Fi / Bluetooth / power, serves the built shell
   src/providers/     linux.ts (sysfs, nmcli, bluetoothctl) and mock.ts for laptop dev
 packages/protocol/   shared types + endpoint names for shell ↔ daemon
@@ -50,12 +51,26 @@ in `/etc/handheld/handheld.env` (set `COG_PLATFORM=wl` if you run under a Waylan
 
 ## Adding an app
 
-1. Create `apps/shell/src/apps/<name>/index.ts` exporting a `HandheldApp`.
-2. Add it to `apps` in `apps/shell/src/apps/registry.ts`.
+1. Create `apps/shell/src/apps/<name>/<Name>.tsx` exporting a component.
+2. Add an entry to `apps` in `apps/shell/src/apps/registry.ts`.
 
-Mark anything selectable with `data-focusable` and the host handles d-pad navigation,
-A to activate and B to go back. Implement `onButton` to take over buttons yourself
-(games, scrubbing a track) — return `true` for the ones you handle.
+Mark anything selectable with `data-focusable` (add `tabIndex={0}` if it isn't a button
+or link) and the shell handles d-pad navigation, A to activate and B to go back.
+`data-autofocus` picks what's focused when the app opens. To take over buttons yourself
+(games, scrubbing a track), call `useButtons((b) => …)` and return `true` for the ones
+you handle.
+
+Device state lives in the `systemState` signal (`src/core/bridge.ts`). Read
+`systemState.value` in a component and it updates on its own. For values that change
+often, pass a `computed` signal straight into JSX (see `StatusBar.tsx`) so only that text
+node updates.
+
+## Styling
+
+Tailwind 4, configured in `apps/shell/src/styles.css`. Palette tokens live in `@theme`:
+`mask`, `mask-deep`, `trace`, `silk`, `pad` (focus accent), `warn`. The root font size
+scales with the screen, so rem-based utilities scale with it. Style d-pad focus with
+`focus:` variants. Avoid large blurs and `backdrop-filter`; they're expensive on WPE.
 
 ## Not decided yet
 
