@@ -23,7 +23,9 @@ const { server, close } = startServer({
 });
 
 server.listen(port, host, () => {
-  console.log(`handheld daemon on http://${host}:${port} (${provider.mock ? "mock" : "linux"} provider)`);
+  console.log(
+    `handheld daemon on http://${host}:${port} (${provider.mock ? "mock" : "linux"} provider)`,
+  );
 });
 
 for (const signal of ["SIGINT", "SIGTERM"] as const) {

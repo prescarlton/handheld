@@ -1,6 +1,6 @@
 import { signal } from "@preact/signals";
 import { useEffect, useRef } from "preact/hooks";
-import { isDirection, type Button } from "./buttons.ts";
+import { type Button, isDirection } from "./buttons.ts";
 import { moveFocus } from "./focus.ts";
 
 /** Id of the visible app. "launcher" is home. */
@@ -8,6 +8,11 @@ export const currentAppId = signal("launcher");
 
 export function openApp(id: string): void {
   currentAppId.value = id;
+}
+
+/** Leave the current app. Apps are one level deep, so this is always home. */
+export function goBack(): void {
+  openApp("launcher");
 }
 
 type ButtonHandler = (button: Button) => boolean;
@@ -49,6 +54,6 @@ export function dispatchButton(button: Button, appRoot: HTMLElement | null): voi
   } else if (button === "a") {
     (document.activeElement as HTMLElement | null)?.click();
   } else if (button === "b" && currentAppId.value !== "launcher") {
-    openApp("launcher");
+    goBack();
   }
 }

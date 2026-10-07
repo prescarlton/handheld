@@ -62,7 +62,8 @@ export function startServer({ provider, serveStatic, pollMs }: ServerOptions) {
       return json(res, result.ok ? 200 : 500, result);
     }
 
-    if (url.pathname.startsWith("/api/")) return json(res, 404, { ok: false, error: "Unknown endpoint" });
+    if (url.pathname.startsWith("/api/"))
+      return json(res, 404, { ok: false, error: "Unknown endpoint" });
 
     if (serveStatic) return serveStatic(req, res);
     res.writeHead(404).end();

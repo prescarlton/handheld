@@ -7,9 +7,13 @@
     "dev": "pnpm --parallel --filter ./apps/shell --filter ./services/daemon dev",
     "build": "pnpm -r build",
     "typecheck": "pnpm -r typecheck",
-    "start": "pnpm --filter ./services/daemon start"
+    "start": "pnpm --filter ./services/daemon start",
+    "lint": "biome check .",
+    "format": "biome format --write .",
+    "check": "biome check --write ."
   },
   "devDependencies": {
+    "@biomejs/biome": "2.5.15",
     "typescript": "^5.6.0"
   }
 }

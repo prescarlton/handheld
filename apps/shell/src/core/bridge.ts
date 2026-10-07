@@ -1,5 +1,11 @@
+import {
+  API,
+  type Command,
+  type CommandResult,
+  type DaemonEvent,
+  type SystemState,
+} from "@handheld/protocol";
 import { signal } from "@preact/signals";
-import { API, type Command, type CommandResult, type DaemonEvent, type SystemState } from "@handheld/protocol";
 
 /**
  * Latest state pushed by the daemon, or null while it's unreachable.

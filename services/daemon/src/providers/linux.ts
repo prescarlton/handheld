@@ -1,7 +1,14 @@
 import { execFile } from "node:child_process";
 import { readdir, readFile } from "node:fs/promises";
 import { promisify } from "node:util";
-import type { BatteryState, BluetoothState, Command, CommandResult, SystemState, WifiState } from "@handheld/protocol";
+import type {
+  BatteryState,
+  BluetoothState,
+  Command,
+  CommandResult,
+  SystemState,
+  WifiState,
+} from "@handheld/protocol";
 import type { SystemProvider } from "./types.ts";
 
 const exec = promisify(execFile);
