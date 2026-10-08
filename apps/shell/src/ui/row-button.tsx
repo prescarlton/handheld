@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import type { ComponentChildren, JSX } from "preact";
 
-type Props = Omit<JSX.HTMLAttributes<HTMLButtonElement>, "label"> & {
+type Props = Omit<JSX.ButtonHTMLAttributes<HTMLButtonElement>, "label"> & {
   label: ComponentChildren;
   /** Muted subtitle under the label. */
   detail?: ComponentChildren;

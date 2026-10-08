@@ -1,13 +1,13 @@
 import { goBack } from "../core/navigation.ts";
 
 /** Chevron that leaves the current app, same as the B button. */
-export function BackButton() {
+export function BackButton({ onClick = goBack }: { onClick?: () => void }) {
   return (
     <button
       type="button"
       data-focusable
       aria-label="Back"
-      onClick={goBack}
+      onClick={onClick}
       class="-ml-2 flex size-9 shrink-0 items-center justify-center rounded-full text-muted transition-[background-color,box-shadow,color] duration-150 focus:inset-ring-2 focus:inset-ring-accent focus:bg-foreground/10 focus:text-foreground"
     >
       <svg

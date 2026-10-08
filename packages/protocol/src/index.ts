@@ -9,6 +9,13 @@ export const API = {
   events: "/api/events",
   state: "/api/state",
   command: "/api/command",
+  spotify: {
+    /** Open in a browser to sign in. Redirects to Spotify, which redirects back to the daemon. */
+    login: "/api/spotify/login",
+    logout: "/api/spotify/logout",
+    /** Spotify Web API proxy: `${web}/me/player` → https://api.spotify.com/v1/me/player. */
+    web: "/api/spotify/web",
+  },
 } as const;
 
 export interface BatteryState {
@@ -38,8 +45,17 @@ export interface SystemState {
   mock: boolean;
 }
 
+export interface SpotifyStatus {
+  /** False when the daemon has no SPOTIFY_CLIENT_ID. */
+  configured: boolean;
+  signedIn: boolean;
+  /** Display name of the signed-in account. */
+  user: string | null;
+}
+
 export type DaemonEvent =
   | { type: "system"; state: SystemState }
+  | { type: "spotify"; status: SpotifyStatus }
   | { type: "log"; level: "info" | "warn" | "error"; message: string };
 
 export type Command =

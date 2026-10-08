@@ -1,6 +1,6 @@
 import type { JSX } from "preact";
 
-type Props = JSX.HTMLAttributes<HTMLButtonElement> & { autofocus?: boolean };
+type Props = JSX.ButtonHTMLAttributes<HTMLButtonElement> & { autofocus?: boolean };
 
 /** Bordered button that lights up in the accent color when focused by the d-pad. */
 export function Action({ autofocus, class: className, ...props }: Props) {

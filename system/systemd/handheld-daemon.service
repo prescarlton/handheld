@@ -7,6 +7,10 @@ Type=simple
 User=handheld
 WorkingDirectory=/opt/handheld
 EnvironmentFile=-/etc/handheld/handheld.env
+# Spotify session (refresh token) lives here, owned by the handheld user, mode 0700.
+StateDirectory=handheld
+StateDirectoryMode=0700
+Environment=HANDHELD_STATE_DIR=/var/lib/handheld
 ExecStart=/usr/bin/node /opt/handheld/services/daemon/dist/daemon.js
 Restart=always
 RestartSec=2

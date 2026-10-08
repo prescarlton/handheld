@@ -1,5 +1,5 @@
-import { Settings } from "./settings/Settings.tsx";
-import { Spotify } from "./spotify/Spotify.tsx";
+import { Settings } from "./settings/settings.tsx";
+import { Spotify } from "./spotify/spotify.tsx";
 import type { HandheldApp } from "./types.ts";
 
 /** Add new apps here. Order is launcher order. */

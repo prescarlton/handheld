@@ -5,14 +5,16 @@ type Props = {
   title: string;
   /** Shown beside the title, e.g. a status badge. */
   accessory?: ComponentChildren;
+  /** Overrides the back chevron, e.g. to pop a view inside the app. Defaults to leaving the app. */
+  onBack?: () => void;
   children: ComponentChildren;
 };
 
-export function Screen({ title, accessory, children }: Props) {
+export function Screen({ title, accessory, onBack, children }: Props) {
   return (
     <section>
       <div class="mb-3 flex items-center gap-2">
-        <BackButton />
+        <BackButton onClick={onBack} />
         <h1 class="font-semibold text-[1.8rem] leading-[1.1] tracking-[-0.01em]">{title}</h1>
         {accessory}
       </div>

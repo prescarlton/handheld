@@ -1,14 +1,17 @@
 import { createServer, type ServerResponse } from "node:http";
 import { API, type Command, type DaemonEvent, type SystemState } from "@handheld/protocol";
 import type { SystemProvider } from "./providers/types.ts";
+import type { SpotifyAuth } from "./spotify/auth.ts";
+import { handleSpotify } from "./spotify/routes.ts";
 
 interface ServerOptions {
   provider: SystemProvider;
   serveStatic?: (req: import("node:http").IncomingMessage, res: ServerResponse) => Promise<void>;
   pollMs: number;
+  spotify?: SpotifyAuth;
 }
 
-export function startServer({ provider, serveStatic, pollMs }: ServerOptions) {
+export function startServer({ provider, serveStatic, pollMs, spotify }: ServerOptions) {
   const clients = new Set<ServerResponse>();
   let latest: SystemState | null = null;
 
@@ -28,6 +31,7 @@ export function startServer({ provider, serveStatic, pollMs }: ServerOptions) {
 
   void poll();
   const timer = setInterval(poll, pollMs);
+  const stopSpotify = spotify?.onChange((status) => broadcast({ type: "spotify", status }));
 
   const server = createServer(async (req, res) => {
     const url = new URL(req.url ?? "/", "http://localhost");
@@ -40,6 +44,9 @@ export function startServer({ provider, serveStatic, pollMs }: ServerOptions) {
       });
       res.write("retry: 2000\n\n");
       if (latest) res.write(`data: ${JSON.stringify({ type: "system", state: latest })}\n\n`);
+      if (spotify) {
+        res.write(`data: ${JSON.stringify({ type: "spotify", status: spotify.status() })}\n\n`);
+      }
       clients.add(res);
       req.on("close", () => clients.delete(res));
       return;
@@ -62,6 +69,10 @@ export function startServer({ provider, serveStatic, pollMs }: ServerOptions) {
       return json(res, result.ok ? 200 : 500, result);
     }
 
+    if (spotify && url.pathname.startsWith("/api/spotify/")) {
+      if (await handleSpotify(spotify, req, res, url, readBody)) return;
+    }
+
     if (url.pathname.startsWith("/api/"))
       return json(res, 404, { ok: false, error: "Unknown endpoint" });
 
@@ -73,6 +84,7 @@ export function startServer({ provider, serveStatic, pollMs }: ServerOptions) {
     server,
     close() {
       clearInterval(timer);
+      stopSpotify?.();
       for (const client of clients) client.end();
       server.close();
     },

@@ -3,6 +3,7 @@ import {
   type Command,
   type CommandResult,
   type DaemonEvent,
+  type SpotifyStatus,
   type SystemState,
 } from "@handheld/protocol";
 import { signal } from "@preact/signals";
@@ -13,6 +14,9 @@ import { signal } from "@preact/signals";
  */
 export const systemState = signal<SystemState | null>(null);
 
+/** Spotify sign-in state, pushed by the daemon. Null until the first event. */
+export const spotifyStatus = signal<SpotifyStatus | null>(null);
+
 let source: EventSource | null = null;
 
 export function connectBridge(): void {
@@ -21,6 +25,7 @@ export function connectBridge(): void {
   source.onmessage = (message: MessageEvent<string>) => {
     const event = JSON.parse(message.data) as DaemonEvent;
     if (event.type === "system") systemState.value = event.state;
+    else if (event.type === "spotify") spotifyStatus.value = event.status;
     else console[event.level === "info" ? "log" : event.level](`[daemon] ${event.message}`);
   };
   // EventSource reconnects on its own; clearing state shows the UI is offline meanwhile.
